@@ -1,0 +1,294 @@
+<!--
+  HostelHub Email Templates
+  ========================
+  Paste each template into Supabase Dashboard:
+  Authentication → Email Templates → [Template Name]
+
+  Variables available:
+    {{ .ConfirmationURL }}  - confirmation/reset link
+    {{ .Email }}            - recipient email
+    {{ .SiteURL }}          - your app URL
+    {{ .Token }}            - raw OTP token (if using OTP)
+-->
+
+<!-- ============================================================ -->
+<!-- TEMPLATE 1: Confirm Signup (Email Verification)             -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm your HostelHub email</title>
+</head>
+<body style="margin:0;padding:0;background-color:#020617;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#020617;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#16a34a;border-radius:12px;padding:10px 14px;">
+                    <span style="color:#ffffff;font-size:20px;font-weight:800;letter-spacing:-0.5px;">
+                      Hostel<span style="color:#bbf7d0;">Hub</span>
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td style="background-color:#0f172a;border-radius:20px;border:1px solid #1e293b;overflow:hidden;">
+
+              <!-- Green top bar -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#16a34a 0%,#15803d 100%);padding:32px 40px;text-align:center;">
+                    <div style="background-color:rgba(255,255,255,0.15);border-radius:50%;width:64px;height:64px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;">
+                      <span style="font-size:28px;">✉️</span>
+                    </div>
+                    <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0;letter-spacing:-0.3px;">
+                      Confirm your email
+                    </h1>
+                    <p style="color:#bbf7d0;font-size:14px;margin:8px 0 0;">
+                      One click and you're in 🏠
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Body -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:36px 40px;">
+                    <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0 0 24px;">
+                      Welcome to <strong style="color:#e2e8f0;">HostelHub</strong> — Nigeria's student accommodation platform. 
+                      You're one step away from finding your perfect hostel.
+                    </p>
+
+                    <!-- CTA Button -->
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" style="padding:8px 0 28px;">
+                          <a href="{{ .ConfirmationURL }}"
+                             style="display:inline-block;background:linear-gradient(135deg,#16a34a,#15803d);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;letter-spacing:0.2px;box-shadow:0 4px 14px rgba(22,163,74,0.35);">
+                            ✓ Confirm my email address
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <!-- Security note -->
+                    <div style="background-color:#0f2d1f;border:1px solid #166534;border-radius:10px;padding:14px 16px;margin-bottom:24px;">
+                      <p style="color:#86efac;font-size:13px;margin:0;line-height:1.5;">
+                        🔒 <strong>Security tip:</strong> This link expires in 24 hours and can only be used once. 
+                        If you didn't create this account, you can safely ignore this email.
+                      </p>
+                    </div>
+
+                    <p style="color:#475569;font-size:13px;margin:0 0 8px;">
+                      Button not working? Copy and paste this link:
+                    </p>
+                    <p style="color:#64748b;font-size:11px;word-break:break-all;background:#020617;padding:10px 12px;border-radius:8px;border:1px solid #1e293b;margin:0;">
+                      {{ .ConfirmationURL }}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 0 0;text-align:center;">
+              <p style="color:#334155;font-size:12px;margin:0 0 4px;">
+                © 2025 HostelHub Nigeria. All rights reserved.
+              </p>
+              <p style="color:#1e293b;font-size:12px;margin:0;">
+                You received this because {{ .Email }} was used to register.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!-- ============================================================ -->
+<!-- TEMPLATE 2: Reset Password                                   -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Reset your HostelHub password</title>
+</head>
+<body style="margin:0;padding:0;background-color:#020617;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#020617;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#16a34a;border-radius:12px;padding:10px 14px;">
+                    <span style="color:#ffffff;font-size:20px;font-weight:800;">Hostel<span style="color:#bbf7d0;">Hub</span></span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Card -->
+          <tr>
+            <td style="background-color:#0f172a;border-radius:20px;border:1px solid #1e293b;overflow:hidden;">
+
+              <!-- Amber top bar for password reset -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#d97706 0%,#b45309 100%);padding:32px 40px;text-align:center;">
+                    <div style="font-size:40px;margin-bottom:12px;">🔑</div>
+                    <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0;">
+                      Reset your password
+                    </h1>
+                    <p style="color:#fde68a;font-size:14px;margin:8px 0 0;">
+                      We got your request — let's get you back in
+                    </p>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Body -->
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:36px 40px;">
+                    <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0 0 24px;">
+                      We received a request to reset the password for your HostelHub account 
+                      (<strong style="color:#e2e8f0;">{{ .Email }}</strong>). 
+                      Click the button below to set a new password.
+                    </p>
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td align="center" style="padding:8px 0 28px;">
+                          <a href="{{ .ConfirmationURL }}"
+                             style="display:inline-block;background:linear-gradient(135deg,#d97706,#b45309);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;box-shadow:0 4px 14px rgba(217,119,6,0.35);">
+                            🔑 Reset my password
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <div style="background-color:#1c1107;border:1px solid #92400e;border-radius:10px;padding:14px 16px;margin-bottom:24px;">
+                      <p style="color:#fcd34d;font-size:13px;margin:0;line-height:1.5;">
+                        ⚠️ <strong>This link expires in 1 hour.</strong> If you didn't request a password reset, 
+                        please ignore this email — your password will remain unchanged.
+                      </p>
+                    </div>
+
+                    <p style="color:#475569;font-size:13px;margin:0 0 8px;">
+                      Button not working? Copy and paste this link:
+                    </p>
+                    <p style="color:#64748b;font-size:11px;word-break:break-all;background:#020617;padding:10px 12px;border-radius:8px;border:1px solid #1e293b;margin:0;">
+                      {{ .ConfirmationURL }}
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding:24px 0 0;text-align:center;">
+              <p style="color:#334155;font-size:12px;margin:0;">
+                © 2025 HostelHub Nigeria. You received this at {{ .Email }}
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+
+
+<!-- ============================================================ -->
+<!-- TEMPLATE 3: Magic Link (if enabled)                         -->
+<!-- ============================================================ -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Your HostelHub magic link</title>
+</head>
+<body style="margin:0;padding:0;background-color:#020617;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#020617;padding:40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+          <tr>
+            <td align="center" style="padding-bottom:32px;">
+              <table cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background-color:#16a34a;border-radius:12px;padding:10px 14px;">
+                    <span style="color:#ffffff;font-size:20px;font-weight:800;">Hostel<span style="color:#bbf7d0;">Hub</span></span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="background-color:#0f172a;border-radius:20px;border:1px solid #1e293b;overflow:hidden;">
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="background:linear-gradient(135deg,#7c3aed 0%,#6d28d9 100%);padding:32px 40px;text-align:center;">
+                    <div style="font-size:40px;margin-bottom:12px;">✨</div>
+                    <h1 style="color:#ffffff;font-size:22px;font-weight:700;margin:0;">Your magic sign-in link</h1>
+                    <p style="color:#ddd6fe;font-size:14px;margin:8px 0 0;">No password needed — just click and go</p>
+                  </td>
+                </tr>
+              </table>
+              <table width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="padding:36px 40px;text-align:center;">
+                    <p style="color:#94a3b8;font-size:15px;line-height:1.7;margin:0 0 24px;">
+                      Click the link below to sign in to HostelHub instantly. This link is single-use and expires in 60 minutes.
+                    </p>
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:#ffffff;font-size:15px;font-weight:700;text-decoration:none;padding:14px 40px;border-radius:12px;box-shadow:0 4px 14px rgba(124,58,237,0.35);">
+                      ✨ Sign in to HostelHub
+                    </a>
+                    <p style="color:#475569;font-size:12px;margin:24px 0 0;">
+                      If you didn&apos;t request this, you can safely ignore this email.
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 0 0;text-align:center;">
+              <p style="color:#334155;font-size:12px;margin:0;">© 2025 HostelHub Nigeria</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
