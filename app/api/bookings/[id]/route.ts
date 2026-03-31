@@ -111,8 +111,14 @@ export async function PATCH(
           .update({ available_rooms: hostelData.available_rooms - 1 })
           .eq("id", booking.hostel_id);
       }
-    } else if (["CANCELLED", "REJECTED"].includes(status) && booking.status === "CONFIRMED") {
-      await supabase.from("rooms").update({ is_available: true }).eq("id", booking.room_id);
+    } else if (
+      ["CANCELLED", "REJECTED"].includes(status) &&
+      !["CANCELLED", "REJECTED"].includes(booking.status)
+    ) {
+      // Release the room whenever a booking is cancelled/rejected (regardless of previous status)
+      if (booking.room_id) {
+        await supabase.from("rooms").update({ is_available: true }).eq("id", booking.room_id);
+      }
       const { data: hostelData } = await supabase
         .from("hostels")
         .select("available_rooms, total_rooms")
@@ -121,7 +127,12 @@ export async function PATCH(
       if (hostelData) {
         await supabase
           .from("hostels")
-          .update({ available_rooms: Math.min(hostelData.available_rooms + 1, hostelData.total_rooms) })
+          .update({
+            available_rooms: Math.min(
+              (hostelData.available_rooms ?? 0) + 1,
+              hostelData.total_rooms ?? 999
+            ),
+          })
           .eq("id", booking.hostel_id);
       }
     }

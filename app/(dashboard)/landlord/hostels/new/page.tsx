@@ -10,6 +10,7 @@ import { Input, Textarea } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { CheckboxGroup } from "@/components/ui/Checkbox";
+import { MultiImageUpload } from "@/components/features/MultiImageUpload";
 import { FACILITIES_OPTIONS, LOCATIONS } from "@/utils/format";
 import toast from "react-hot-toast";
 
@@ -32,6 +33,7 @@ export default function NewHostelPage() {
     total_rooms: "1",
   });
   const [facilities, setFacilities] = useState<string[]>([]);
+  const [images, setImages] = useState<string[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   const set = (key: string, val: string) =>
@@ -58,17 +60,12 @@ export default function NewHostelPage() {
 
     createHostel.mutate(
       {
-        name: form.name,
-        description: form.description,
-        location: form.location,
-        address: form.address,
+        ...form,
         price_per_year: Number(form.price_per_year),
-        bank_name: form.bank_name,
-        account_number: form.account_number,
-        account_name: form.account_name,
-        whatsapp_number: form.whatsapp_number || undefined,
         total_rooms: Number(form.total_rooms),
+        whatsapp_number: form.whatsapp_number || undefined,
         facilities,
+        images, // ← now included
       },
       {
         onSuccess: () => {
@@ -82,7 +79,6 @@ export default function NewHostelPage() {
 
   return (
     <div className="max-w-3xl space-y-6">
-      {/* Header */}
       <div className="flex items-center gap-4">
         <Link href="/landlord/hostels">
           <Button variant="ghost" size="icon">
@@ -100,9 +96,7 @@ export default function NewHostelPage() {
       <form onSubmit={handleSubmit} className="space-y-5">
         {/* Basic Info */}
         <Card variant="bordered">
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Basic Information</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <Input
               label="Hostel Name"
@@ -146,23 +140,39 @@ export default function NewHostelPage() {
                 error={errors.price_per_year}
               />
               <Input
-                label="Total Number of Rooms"
+                label="Total Bed Spaces / Rooms"
                 type="number"
                 min="1"
                 placeholder="e.g., 20"
                 value={form.total_rooms}
                 onChange={(e) => set("total_rooms", e.target.value)}
                 error={errors.total_rooms}
+                hint="Rooms will be auto-generated (Room 1, Room 2...) and assigned first-come first-served"
               />
             </div>
           </CardContent>
         </Card>
 
+        {/* Photos — NEW */}
+        <Card variant="bordered">
+          <CardHeader><CardTitle>Hostel Photos</CardTitle></CardHeader>
+          <CardContent>
+            <MultiImageUpload
+              value={images}
+              onChange={setImages}
+              bucket="hostel-images"
+              maxFiles={6}
+              label=""
+            />
+            <p className="text-xs text-slate-500 mt-2">
+              First photo will be the cover image. You can add up to 6 photos.
+            </p>
+          </CardContent>
+        </Card>
+
         {/* Facilities */}
         <Card variant="bordered">
-          <CardHeader>
-            <CardTitle>Facilities & Amenities</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Facilities & Amenities</CardTitle></CardHeader>
           <CardContent>
             <CheckboxGroup
               options={FACILITIES_OPTIONS}
@@ -175,9 +185,7 @@ export default function NewHostelPage() {
 
         {/* Payment Details */}
         <Card variant="bordered">
-          <CardHeader>
-            <CardTitle>Payment Details</CardTitle>
-          </CardHeader>
+          <CardHeader><CardTitle>Payment Details</CardTitle></CardHeader>
           <CardContent className="space-y-4">
             <p className="text-xs text-slate-400 bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
               Students will use these bank details to make manual transfers. Make sure they are accurate.
@@ -215,12 +223,9 @@ export default function NewHostelPage() {
           </CardContent>
         </Card>
 
-        {/* Submit */}
         <div className="flex gap-3 justify-end">
           <Link href="/landlord/hostels">
-            <Button variant="outline" type="button">
-              Cancel
-            </Button>
+            <Button variant="outline" type="button">Cancel</Button>
           </Link>
           <Button
             type="submit"

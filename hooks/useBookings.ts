@@ -6,13 +6,14 @@ async function fetchBookings(params?: Record<string, string>): Promise<Booking[]
   const res = await fetch(`/api/bookings?${qs.toString()}`);
   if (!res.ok) throw new Error("Failed to fetch bookings");
   const json = await res.json();
-  return json.data;
+  return json.data as Booking[];
 }
 
 export function useBookings(params?: Record<string, string>) {
   return useQuery({
-    queryKey: ["bookings", params],
-    queryFn: () => fetchBookings(params),
+    queryKey: ["bookings", params ?? null],
+    queryFn:  () => fetchBookings(params),
+    staleTime: 30_000,
   });
 }
 
@@ -33,24 +34,28 @@ export function useCreateBooking() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data: {
-      room_id: string;
-      hostel_id: string;
+      hostel_id:     string;   // ← room_id removed; server auto-assigns
       academic_year: string;
-      notes?: string;
+      notes?:        string;
     }) => {
       const res = await fetch("/api/bookings", {
-        method: "POST",
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body:    JSON.stringify(data),
       });
       if (!res.ok) {
         const err = await res.json();
         throw new Error(err.error || "Failed to create booking");
       }
-      return res.json();
+      return res.json() as Promise<{
+        data: Booking & { assigned_room: string };
+        message: string;
+      }>;
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bookings"] });
+      qc.invalidateQueries({ queryKey: ["hostels"] });
+      qc.invalidateQueries({ queryKey: ["hostel"] }); // refresh detail page availability
     },
   });
 }
@@ -58,17 +63,11 @@ export function useCreateBooking() {
 export function useUpdateBookingStatus() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: BookingStatus;
-    }) => {
+    mutationFn: async ({ id, status }: { id: string; status: BookingStatus }) => {
       const res = await fetch(`/api/bookings/${id}`, {
-        method: "PATCH",
+        method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status }),
+        body:    JSON.stringify({ status }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -78,6 +77,7 @@ export function useUpdateBookingStatus() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bookings"] });
+      qc.invalidateQueries({ queryKey: ["hostels"] });
     },
   });
 }
@@ -86,16 +86,16 @@ export function useSubmitPaymentProof() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (data: {
-      booking_id: string;
-      image_url?: string;
+      booking_id:      string;
+      image_url?:      string;
       whatsapp_proof?: string;
-      note?: string;
-      amount: number;
+      note?:           string;
+      amount:          number;
     }) => {
       const res = await fetch("/api/payments", {
-        method: "POST",
+        method:  "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data),
+        body:    JSON.stringify(data),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -103,9 +103,7 @@ export function useSubmitPaymentProof() {
       }
       return res.json();
     },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["bookings"] });
-    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["bookings"] }),
   });
 }
 
@@ -113,18 +111,16 @@ export function useVerifyPayment() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async ({
-      id,
-      status,
-      rejection_reason,
+      id, status, rejection_reason,
     }: {
-      id: string;
-      status: "VERIFIED" | "REJECTED";
+      id:               string;
+      status:           "VERIFIED" | "REJECTED";
       rejection_reason?: string;
     }) => {
       const res = await fetch(`/api/payments/${id}`, {
-        method: "PATCH",
+        method:  "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status, rejection_reason }),
+        body:    JSON.stringify({ status, rejection_reason }),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -134,6 +130,7 @@ export function useVerifyPayment() {
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["bookings"] });
+      qc.invalidateQueries({ queryKey: ["hostels"] });
     },
   });
 }

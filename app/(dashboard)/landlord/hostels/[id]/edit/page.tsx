@@ -176,11 +176,12 @@ export default function EditHostelPage() {
                 error={errors.price_per_year}
               />
               <Input
-                label="Total Number of Rooms"
+                label="Total Bed Spaces / Rooms"
                 type="number"
                 min="1"
                 value={form.total_rooms}
                 onChange={(e) => set("total_rooms", e.target.value)}
+                hint="Increasing this adds new auto-numbered rooms; reducing marks excess rooms inactive"
               />
             </div>
           </CardContent>

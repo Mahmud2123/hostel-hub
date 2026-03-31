@@ -1,10 +1,44 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { Building2, Shield, Clock, Search, Star, ArrowRight, CheckCircle, Users, MapPin } from "lucide-react";
+import {
+  Building2, Shield, Clock, Search, Star, ArrowRight,
+  CheckCircle, Users, MapPin, MessageCircle, Home, Loader2,
+} from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Input, Textarea } from "@/components/ui/Input";
+import toast from "react-hot-toast";
 
 export default function LandingPage() {
+  const [contactForm, setContactForm] = useState({ name: "", phone: "", email: "", message: "" });
+  const [submitting, setSubmitting] = useState(false);
+  const WHATSAPP_NUMBER = "2348000000000"; // TODO: replace with your admin WhatsApp
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!contactForm.name || !contactForm.phone || !contactForm.message) {
+      toast.error("Please fill in name, phone, and message.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const res = await fetch("/api/landlord-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(contactForm),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Failed to submit");
+      toast.success(json.message);
+      setContactForm({ name: "", phone: "", email: "", message: "" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Submission failed");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 overflow-x-hidden">
       {/* Nav */}
@@ -152,6 +186,98 @@ export default function LandingPage() {
                 <p className="text-xs text-slate-500 leading-relaxed">{f.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Landlord CTA */}
+      <section className="py-20 px-4 sm:px-6 border-t border-slate-800/50 bg-slate-900/40">
+        <div className="max-w-5xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-12 items-start">
+            {/* Left copy */}
+            <div>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-medium mb-5">
+                <Home className="h-3 w-3" />
+                For Landlords
+              </div>
+              <h2 className="text-3xl font-bold mb-4">
+                List Your Property on HostelHub
+              </h2>
+              <p className="text-slate-400 leading-relaxed mb-6">
+                Reach thousands of verified students every semester. HostelHub handles the booking flow — you focus on managing your property.
+              </p>
+              <ul className="space-y-3 mb-8">
+                {[
+                  "Admin-verified — your listing is trusted by students",
+                  "Full payment receipt trail — no more he-said-she-said disputes",
+                  "Dashboard to approve or reject bookings at a glance",
+                  "Free to join during the launch period",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-3 text-sm text-slate-300">
+                    <CheckCircle className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              {/* WhatsApp deep link */}
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hi HostelHub, I want to list my property as a landlord.")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2.5 px-5 py-3 rounded-xl bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] hover:bg-[#25D366]/20 transition-colors font-medium text-sm"
+              >
+                <MessageCircle className="h-5 w-5" />
+                Chat us on WhatsApp — fastest response
+              </a>
+            </div>
+
+            {/* Right form */}
+            <div className="rounded-2xl bg-slate-800/60 border border-slate-700/50 p-6">
+              <h3 className="text-base font-semibold text-slate-100 mb-5">
+                Request a Landlord Account
+              </h3>
+              <form onSubmit={handleContactSubmit} className="space-y-4">
+                <Input
+                  label="Full Name"
+                  placeholder="Your full name"
+                  value={contactForm.name}
+                  onChange={(e) => setContactForm((p) => ({ ...p, name: e.target.value }))}
+                />
+                <Input
+                  label="Phone Number"
+                  type="tel"
+                  placeholder="+234 800 000 0000"
+                  value={contactForm.phone}
+                  onChange={(e) => setContactForm((p) => ({ ...p, phone: e.target.value }))}
+                />
+                <Input
+                  label="Email (optional)"
+                  type="email"
+                  placeholder="you@example.com"
+                  value={contactForm.email}
+                  onChange={(e) => setContactForm((p) => ({ ...p, email: e.target.value }))}
+                />
+                <Textarea
+                  label="Tell us about your property"
+                  placeholder="Number of rooms, location, any questions..."
+                  value={contactForm.message}
+                  onChange={(e) => setContactForm((p) => ({ ...p, message: e.target.value }))}
+                  rows={3}
+                />
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="w-full"
+                  loading={submitting}
+                  leftIcon={submitting ? undefined : <ArrowRight className="h-4 w-4" />}
+                >
+                  {submitting ? "Submitting..." : "Submit Request"}
+                </Button>
+                <p className="text-xs text-slate-500 text-center">
+                  We respond within 24 hours. Your details are kept private.
+                </p>
+              </form>
+            </div>
           </div>
         </div>
       </section>
